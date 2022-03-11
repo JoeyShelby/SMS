@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script type="text/javascript" src="http://localhost:8080/SMS/static/layui/layui.js"></script>
+  <link rel="stylesheet" href="http://localhost:8080/SMS/static/layui/css/layui.css" />
+  <style>
+    #gb{
+      top: 100px;
+    }
+  </style>
+</head>
+
+<body background="http://localhost:8080/SMS/static/img/summer.jpg">
+  <div id="gb" class="layui-container">
+    <div class="layui-row">
+      <div class="layui-col-md-offset4">
+        <form class="layui-form" action="http://localhost:8080/SMS/userServlet">
+          <input type="hidden" name="action" value="addUser">
+          <div class="layui-form-item">
+            <label class="layui-form-label" style="color: white">用户名称</label>
+            <div class="layui-input-inline">
+              <input id="username" type="text" name="username" required lay-verify="title" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+              <span id="repeat" style="color: red"></span>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label" style="color: white">用户密码</label>
+            <div class="layui-input-inline">
+              <input type="password" name="password" required lay-verify="pwd" placeholder="请输入密码" autocomplete="off" class="layui-input" id="pass1">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label" style="color: white">确认密码</label>
+            <div class="layui-input-inline">
+              <input type="password" name="passwords" required lay-verify="pwd" placeholder="请再次输入密码" autocomplete="off" class="layui-input" id="pass2">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label" style="color: white">邮箱</label>
+            <div class="layui-input-inline">
+              <input type="email" name="email" required lay-verify="emails" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label" style="color: white">联系方式</label>
+            <div class="layui-input-inline">
+              <input type="text" name="phone" required lay-verify="phones" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label" style="color: white">真实姓名</label>
+            <div class="layui-input-inline">
+              <input type="text" name="truename" required lay-verify="truename" placeholder="请输入您的姓名" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <div class="layui-input-block">
+              <button id="signUp" class="layui-btn layui-bg-cyan" lay-submit lay-filter="formDemo">立即提交</button>
+              <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</body>
+<script>
+  layui.use(['layer', 'element', 'form','jquery'], function() {
+    var layer = layui.layer;
+    var form = layui.form;
+    var element = layui.element;
+    var layedit = layui.layedit;
+    let $ = layui.jquery;
+
+    //检查用户名是否已经存在
+    $("#username").blur(function (){
+      $.getJSON("http://localhost:8080/SMS/userServlet","action=queryUserByUsername&username="+$("#username").val(),function(data) {
+        if(data.exist){
+          $("#repeat").text("当前用户名已存在！");
+        }else{
+          $("#repeat").text("");
+        }
+      });
+    });
+    //验证输入的密码是否相同；
+    $("#pass2").blur(function () {
+      var pass1 = $("#pass1").val();
+      var pass2 = $("#pass2").val();
+      if (pass1 !== pass2) {
+        layer.msg("两次输入的密码不一致", {
+          "icon": 2,
+          "time": 2000
+        });
+        $("#pass2").val("");
+        return false;
+      }
+      return true;
+    });
+
+    //自定义验证规则
+    form.verify({
+      title: function (value) {
+        if (value.length < 5) {
+          return '用户名至少需要5个字符';
+        }
+      },
+      pwd: [
+        /^(\w){6,20}$/, '只能输入6-20个字母、数字、下划线'
+      ],
+      emails: [
+        /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/, '请输入正确的邮箱格式：<br>如：xxx@qq.com<br>xxx@163.com等格式'
+      ],
+      phones: [
+        /^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/, '您的输入有误，请重新输入(中国11位手机号)'
+      ],
+      truename: [
+        /^[\u4e00-\u9fa5]{2,4}$/, '您的输入有误，请输入2-4位中文'
+      ],
+    });
+  });
+
+</script>
+
+</html>

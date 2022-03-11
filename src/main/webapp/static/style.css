@@ -1,0 +1,19 @@
+@CHARSET "UTF-8";
+
+body {
+	overflow: hidden;
+}
+
+* {
+	margin: 0;
+	font-family:"Microsoft Yahei";
+	color: #666;
+}
+#bottom {
+	height: 30px;
+	width: 1200px;
+	text-align: center;
+}
+#back{
+	cursor: pointer;
+}
